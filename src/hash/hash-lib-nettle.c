@@ -27,6 +27,7 @@
 #include <glib.h>
 #include <nettle/nettle-meta.h>
 #include <nettle/sha3.h>
+#include <nettle/version.h>
 
 #include "hash-lib.h"
 #include "hash-func.h"
@@ -103,7 +104,11 @@ uint8_t *gtkhash_hash_lib_nettle_finish(struct hash_func_s *func,
 	*size = LIB_DATA->meta->digest_size;
 	uint8_t *digest = g_malloc(*size);
 
+#if NETTLE_VERSION_MAJOR >= 4
+	LIB_DATA->meta->digest(LIB_DATA->ctx, digest);
+#else
 	LIB_DATA->meta->digest(LIB_DATA->ctx, *size, digest);
+#endif
 
 	g_free(LIB_DATA->ctx);
 	g_free(LIB_DATA);
